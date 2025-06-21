@@ -12,4 +12,13 @@ export default defineNuxtConfig({
     ],
   },
   css: ['./src/assets/css/main.css'],
+  watch: ['~/src'],
+  modules: [
+    '@pinia/nuxt',
+  ],
+  runtimeConfig: {
+    public: {
+      BACKEND_URL: process.env.BACKEND_URL
+    }
+  },
 })
