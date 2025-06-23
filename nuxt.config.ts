@@ -15,6 +15,7 @@ export default defineNuxtConfig({
   watch: ['~/src'],
   modules: [
     '@pinia/nuxt',
+    '@nuxt/icon'
   ],
   runtimeConfig: {
     public: {
