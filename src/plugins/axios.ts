@@ -1,8 +1,7 @@
 import axios from 'axios';
-import { useAuthen } from '~/composable/use-authen';
 
 export default defineNuxtPlugin(() => {
-  const { token } = useAuthen();
+  const cookieAuthToken = useCookie('auth_token')
   const runtimeConfig = useRuntimeConfig()
 
   const instance = axios.create({
@@ -13,8 +12,8 @@ export default defineNuxtPlugin(() => {
   });
 
   instance.interceptors.request.use((config) => {
-    if (token.value) {
-      config.headers.Authorization = `Bearer ${token.value}`;
+    if (cookieAuthToken.value) {
+      config.headers.Authorization = `Bearer ${cookieAuthToken.value}`;
     }
     return config;
   });
@@ -23,7 +22,7 @@ export default defineNuxtPlugin(() => {
     (response) => response,
     (error) => {
       if (error.response?.status === 403) {
-        localStorage.removeItem('auth_token');
+        useCookie('auth_token').value = null
         navigateTo('/login');
       }
       return Promise.reject(error);

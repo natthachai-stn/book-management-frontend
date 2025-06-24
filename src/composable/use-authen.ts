@@ -7,7 +7,6 @@ interface JwtPayload {
 }
 
 export const useAuthen = () => {
-    const token = useState('auth_token', () => null)
 
     const login = async (username: string, password: string) => {
         try {
@@ -30,7 +29,6 @@ export const useAuthen = () => {
             })
 
             cookie.value = accessToken
-            token.value = accessToken
 
             return data
         } catch (error) {
@@ -41,8 +39,8 @@ export const useAuthen = () => {
 
     const logout = () => {
         useCookie('auth_token').value = null
-        token.value = null
+        navigateTo('/login');
     }
 
-    return { token, login, logout }
+    return { login, logout }
 }
