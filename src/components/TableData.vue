@@ -13,12 +13,16 @@ dayjs.extend(timezone)
 const currentPage = ref(1)
 const pageSize = 10
 const totalPages = ref(1)
+const loading = ref<boolean>(false)
 const books = ref<BookForm[]>([])
 
 const fetchData = async () => {
+  loading.value = true
+  await new Promise((resolve) => setTimeout(resolve, 1500))
   const { data: booksData } = await nuxtApp.$axios.get<BookResp>(`/book?page=${currentPage.value}&pageSize=${pageSize}`)
   books.value = booksData.data
   totalPages.value = Math.ceil((booksData.total || 0) / pageSize)
+  loading.value = false
 }
 
 const maxPaginate = 5
@@ -81,7 +85,14 @@ onMounted(() => {
               <th class="p-3 w-[10%]"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="loading">
+            <tr v-for="i in pageSize" :key="`loading-${i}`" class="text-sm text-gray-500 animate-pulse">
+              <td class="p-4 border-r-1 border-b-1 border-white" colspan="7">
+                <div class="h-4 bg-gray-200 rounded w-full"></div>
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-else>
             <tr class="text-left text-sm text-gray-800" v-for="(book, i) in books" :key='i'>
               <td class="p-3 w-[10%] border-r-1 border-b-1 border-gray-300">{{ book.id }}</td>
               <td class="p-3 w-[15%] border-r-1 border-b-1 border-gray-300">{{ book.title }}</td>
@@ -129,7 +140,6 @@ onMounted(() => {
               > Next
             </button>
       </div>
-
     </div>
   </div>
 </template>

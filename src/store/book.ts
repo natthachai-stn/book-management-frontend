@@ -12,7 +12,6 @@ export type BookForm = {
 export const useBookStore = defineStore('book', () => {
   const nuxtApp = useNuxtApp();
   const books = ref<BookForm[]>([])
-  const isLoading = ref(false)
 
   const showModal = ref(false)
   const showDeleteModal = ref(false)
@@ -25,6 +24,7 @@ export const useBookStore = defineStore('book', () => {
     published_year: '',
     genre: ''
   })
+
 
   const openAddModal = () => {
     showModal.value = true
@@ -66,12 +66,14 @@ export const useBookStore = defineStore('book', () => {
     }
 
     closeModal()
+    fetchKey.value = new Date().toISOString()
   }
 
 
   const deleteBook = async () => {
     await nuxtApp.$axios.delete(`/book/${formState.value.id}`)
     closeModal()
+    fetchKey.value = new Date().toISOString()
   }
 
   const closeModal = () => {
@@ -84,7 +86,6 @@ export const useBookStore = defineStore('book', () => {
       published_year: '',
       genre: ''
     }
-    fetchKey.value = new Date().toISOString()
   }
 
   return {
@@ -96,7 +97,6 @@ export const useBookStore = defineStore('book', () => {
     openEditModal,
     saveBook,
     closeModal,
-    isLoading,
     deleteBook,
     showDeleteModal,
     openDeleteModal,
