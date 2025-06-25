@@ -11,11 +11,7 @@ interface JwtPayload {
 
 export const useAuthen = () => {
 
-    const cookie = useCookie<string | null>('auth_token', {
-        default: () => null,
-    })
-    const token = useState('auth_token', () => cookie.value)
-    const user = useState<JwtPayload | null>('auth_user', () => null)
+    let userInfo = useCookie<JwtPayload>('user_info')
 
     const login = async (username: string, password: string) => {
 
@@ -29,18 +25,23 @@ export const useAuthen = () => {
             const decoded: JwtPayload = jwtDecode(accessToken)
 
             const now = Math.floor(Date.now() / 1000)
-            const secondsUntilExpiry = decoded.exp - now
+            const expired = decoded.exp - now
 
             const cookie = useCookie('auth_token', {
-                maxAge: secondsUntilExpiry,
+                maxAge: expired,
                 path: '/',
                 sameSite: 'strict',
                 secure: process.env.NODE_ENV === 'production',
             })
 
             cookie.value = accessToken
-            token.value = accessToken
-            user.value = decoded
+            // token.value = accessToken
+            userInfo = useCookie<JwtPayload>('user_info', {
+                maxAge: expired,
+                path: '/',
+                sameSite: 'strict',
+                default: () => decoded
+            })
 
             return data
         } catch (error) {
@@ -54,5 +55,5 @@ export const useAuthen = () => {
         navigateTo('/login');
     }
 
-    return { token, user, login, logout }
+    return { userInfo, login, logout }
 }

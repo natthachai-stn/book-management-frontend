@@ -8,7 +8,7 @@ import TableData from '../components/TableData.vue'
 import DeleteModal from '../components/DeleteModal.vue'
 import { useBookStore } from '../store/book'
 import { useAuthen } from '~/composable/use-authen'
-const { logout, user } = useAuthen()
+const { logout ,userInfo} = useAuthen()
 const bookStore = useBookStore()
 </script>
 
@@ -21,7 +21,7 @@ const bookStore = useBookStore()
 
 
     <div>
-      Welcome '{{ user?.fullname }}'
+      Welcome '{{ userInfo.fullname }}'
     </div>
 
     <!-- add button -->
