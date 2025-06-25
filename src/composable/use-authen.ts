@@ -2,13 +2,23 @@ import axios from "axios"
 import { jwtDecode } from "jwt-decode"
 
 interface JwtPayload {
+    fullname: string
+    email: string
+    id: number
     iat: number
     exp: number
 }
 
 export const useAuthen = () => {
 
+    const cookie = useCookie<string | null>('auth_token', {
+        default: () => null,
+    })
+    const token = useState('auth_token', () => cookie.value)
+    const user = useState<JwtPayload | null>('auth_user', () => null)
+
     const login = async (username: string, password: string) => {
+
         try {
             const runtimeConfig = useRuntimeConfig()
             const { data } = await axios.post(runtimeConfig.public.BACKEND_URL + '/auth/login', {
@@ -29,6 +39,8 @@ export const useAuthen = () => {
             })
 
             cookie.value = accessToken
+            token.value = accessToken
+            user.value = decoded
 
             return data
         } catch (error) {
@@ -42,5 +54,5 @@ export const useAuthen = () => {
         navigateTo('/login');
     }
 
-    return { login, logout }
+    return { token, user, login, logout }
 }
